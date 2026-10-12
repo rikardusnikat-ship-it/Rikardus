@@ -101,6 +101,22 @@ function App() {
     setAssignments((prev) => [...prev, newAssignment]);
   };
 
+  const handleUpdateAssignment = (id: string, assignmentData: Omit<Assignment, 'id' | 'createdBy'>) => {
+    setAssignments((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...assignmentData } : a))
+    );
+  };
+
+  const handleDeleteAssignment = (id: string) => {
+    // Remove related submissions and results
+    const relatedSubmissions = submissions.filter((s) => s.assignmentId === id);
+    const relatedSubmissionIds = relatedSubmissions.map((s) => s.id);
+    
+    setSubmissions((prev) => prev.filter((s) => s.assignmentId !== id));
+    setResults((prev) => prev.filter((r) => !relatedSubmissionIds.includes(r.submissionId)));
+    setAssignments((prev) => prev.filter((a) => a.id !== id));
+  };
+
   // Render based on view
   const renderView = () => {
     // Auth view
@@ -136,6 +152,8 @@ function App() {
             results={results}
             users={users}
             onCreateAssignment={handleCreateAssignment}
+            onUpdateAssignment={handleUpdateAssignment}
+            onDeleteAssignment={handleDeleteAssignment}
             onViewSubmissionDetail={handleViewDetail}
           />
         );
@@ -217,51 +235,48 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50/30">
       {/* Navigation */}
       {showNav && (
-        <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <nav className="bg-white border-b-2 border-blue-600 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-3 cursor-pointer group" onClick={handleBack}>
-                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200/50 group-hover:scale-105 transition-transform">
-                  <span className="text-white text-lg">🎓</span>
+            <div className="flex items-center justify-between h-14">
+              <div className="flex items-center gap-3 cursor-pointer" onClick={handleBack}>
+                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">U</span>
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-800 leading-tight">AI Essay Grader</h1>
-                  <p className="text-xs text-gray-400 leading-tight">
+                  <h1 className="text-sm font-bold text-gray-800 leading-tight">UJIAN ONLINE</h1>
+                  <p className="text-xs text-gray-500 leading-tight">
                     {currentUser.role === 'lecturer' ? 'Panel Dosen' : 'Panel Mahasiswa'}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
                   onClick={handleBack}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                    view === 'dashboard' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50'
+                  className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
+                    view === 'dashboard' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  <span className="hidden sm:inline">🏠 </span>Dashboard
+                  Dashboard
                 </button>
                 <button
                   onClick={handleViewResults}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
                     view === 'results' || view === 'detail'
-                      ? 'bg-indigo-50 text-indigo-700'
+                      ? 'bg-blue-50 text-blue-700'
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  <span className="hidden sm:inline">📊 </span>
-                  {currentUser.role === 'lecturer' ? 'Semua Nilai' : 'Nilai Saya'}
+                  {currentUser.role === 'lecturer' ? 'Rekap Nilai' : 'Nilai Saya'}
                 </button>
                 
-                {/* Divider */}
-                <div className="w-px h-8 bg-gray-200 mx-2 hidden sm:block"></div>
+                <div className="w-px h-6 bg-gray-200 mx-2"></div>
 
-                {/* User Profile */}
-                <div className="flex items-center gap-3">
-                  <div className="hidden md:flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${
+                <div className="flex items-center gap-2">
+                  <div className="hidden md:flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded flex items-center justify-center text-xs font-bold ${
                       currentUser.role === 'lecturer' 
-                        ? 'bg-gradient-to-br from-slate-700 to-slate-900 text-white' 
-                        : 'bg-gradient-to-br from-indigo-500 to-purple-500 text-white'
+                        ? 'bg-slate-700 text-white' 
+                        : 'bg-blue-600 text-white'
                     }`}>
                       {currentUser.name.charAt(0)}
                     </div>
@@ -270,16 +285,16 @@ function App() {
                         {currentUser.name.split(',')[0]}
                       </p>
                       <p className="text-xs text-gray-400 leading-tight">
-                        {currentUser.role === 'lecturer' ? '👨‍🏫 Dosen' : '👨‍🎓 Mahasiswa'}
+                        {currentUser.role === 'lecturer' ? 'Dosen' : 'Mahasiswa'}
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
                     title="Keluar"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                   </button>
@@ -297,23 +312,16 @@ function App() {
 
       {/* Footer */}
       {showNav && (
-        <footer className="border-t border-gray-100 bg-white/50 mt-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <footer className="border-t border-gray-200 bg-gray-50 mt-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+              <p>© 2026 Sistem Ujian Online - AI Essay Grader</p>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-sm">🎓</span>
-                </div>
-                <p className="text-sm text-gray-500">
-                  © 2026 AI Essay Grader — Sistem Penilaian Tugas Berbasis AI
-                </p>
-              </div>
-              <div className="flex items-center gap-4 text-xs text-gray-400">
-                <span className="flex items-center gap-1">🔒 Anti Copy-Paste</span>
+                <span>🔒 Anti Copy-Paste</span>
                 <span>•</span>
-                <span className="flex items-center gap-1">🤖 AI-Powered</span>
+                <span>🤖 AI-Powered</span>
                 <span>•</span>
-                <span className="flex items-center gap-1">📊 Real-time</span>
+                <span>📊 Real-time</span>
               </div>
             </div>
           </div>
