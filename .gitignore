@@ -11,11 +11,11 @@ build/
 dist/
 
 # Misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.DS_online
+.env.online
+.env.development.online
+.env.test.online
+.env.production.online
 
 # Logs
 npm-debug.log*
