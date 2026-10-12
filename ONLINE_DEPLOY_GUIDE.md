@@ -37,7 +37,7 @@ npm --version
 
 1. Buka https://github.com/new
 2. Isi form:
-   - **Repository name:** `ai-essay-grader` (atau nama pilihan Anda)
+   - **Repository name:** `Rikardus` 
    - **Description:** Sistem Ujian Online AI Essay Grader
    - **Public** ✓ (WAJIB PUBLIC untuk GitHub Pages gratis)
    - ❌ Jangan centang "Add a README" (sudah ada)
@@ -52,7 +52,7 @@ npm --version
 // Ubah baris base sesuai nama repository Anda
 
 export default defineConfig({
-  // GANTI 'ai-essay-grader' dengan nama repository Anda
+  // GANTI 'Rikardus' 
   // Contoh: base: '/ai-essay-grader/',
   base: '/ai-essay-grader/', // ← GANTI INI
   plugins: [react(), tailwindcss()],
