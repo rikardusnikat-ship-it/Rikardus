@@ -1,17 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Assignment } from '../types';
+import { Assignment, User } from '../types';
 import AntiPasteTextarea from './AntiPasteTextarea';
 
 interface EssaySubmissionProps {
   assignment: Assignment;
+  currentUser?: User;
   onSubmit: (answer: string, studentName: string, studentId: string, typingTime: number, pasteAttempts: number) => void;
   onBack: () => void;
 }
 
-const EssaySubmission: React.FC<EssaySubmissionProps> = ({ assignment, onSubmit, onBack }) => {
+const EssaySubmission: React.FC<EssaySubmissionProps> = ({ assignment, currentUser, onSubmit, onBack }) => {
   const [answer, setAnswer] = useState('');
-  const [studentName, setStudentName] = useState('');
-  const [studentId, setStudentId] = useState('');
+  const [studentName, setStudentName] = useState(currentUser?.name || '');
+  const [studentId, setStudentId] = useState(currentUser?.nim || '');
   const [pasteAttempts, setPasteAttempts] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);

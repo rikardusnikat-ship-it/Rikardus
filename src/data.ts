@@ -1,4 +1,30 @@
-import { Assignment } from './types';
+import { Assignment, User } from './types';
+
+// Default lecturer user
+export const defaultLecturer: User = {
+  id: 'lecturer-001',
+  name: 'Prof. Dr. Ahmad Wijaya, M.Kom.',
+  email: 'ahmad.wijaya@university.ac.id',
+  password: 'dosen123',
+  role: 'lecturer',
+  nip: '198501012010011001',
+  department: 'Teknik Informatika',
+  createdAt: '2024-01-15T00:00:00.000Z',
+};
+
+// Default student user
+export const defaultStudent: User = {
+  id: 'student-001',
+  name: 'Budi Santoso',
+  email: 'budi.santoso@student.university.ac.id',
+  password: 'mhs123',
+  role: 'student',
+  nim: '2021010001',
+  department: 'Teknik Informatika',
+  createdAt: '2024-08-01T00:00:00.000Z',
+};
+
+export const initialUsers: User[] = [defaultLecturer, defaultStudent];
 
 export const assignments: Assignment[] = [
   {
@@ -8,6 +34,7 @@ export const assignments: Assignment[] = [
     subject: 'Teknologi Informasi',
     maxScore: 100,
     dueDate: '2026-02-15',
+    createdBy: 'lecturer-001',
     rubric: [
       { criteria: 'Kedalaman Analisis', maxScore: 30, weight: 0.3 },
       { criteria: 'Struktur & Koherensi', maxScore: 25, weight: 0.25 },
@@ -23,6 +50,7 @@ export const assignments: Assignment[] = [
     subject: 'Etika Teknologi',
     maxScore: 100,
     dueDate: '2026-02-20',
+    createdBy: 'lecturer-001',
     rubric: [
       { criteria: 'Pemahaman Konsep Etika', maxScore: 30, weight: 0.3 },
       { criteria: 'Argumentasi & Logika', maxScore: 25, weight: 0.25 },
@@ -38,6 +66,7 @@ export const assignments: Assignment[] = [
     subject: 'Manajemen Bisnis',
     maxScore: 100,
     dueDate: '2026-02-25',
+    createdBy: 'lecturer-001',
     rubric: [
       { criteria: 'Analisis Situasi UMKM', maxScore: 25, weight: 0.25 },
       { criteria: 'Strategi Transformasi Digital', maxScore: 30, weight: 0.3 },

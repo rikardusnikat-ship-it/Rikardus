@@ -6,6 +6,7 @@ export interface Assignment {
   maxScore: number;
   dueDate: string;
   rubric: RubricItem[];
+  createdBy: string; // lecturer ID
 }
 
 export interface RubricItem {
@@ -46,4 +47,16 @@ export interface CriteriaScore {
   comment: string;
 }
 
-export type AppView = 'dashboard' | 'assignments' | 'submit' | 'results' | 'detail';
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: 'lecturer' | 'student';
+  nim?: string; // for students
+  nip?: string; // for lecturers
+  department: string;
+  createdAt: string;
+}
+
+export type AppView = 'login' | 'register' | 'dashboard' | 'submit' | 'results' | 'detail' | 'lecturer-students' | 'lecturer-analytics';
