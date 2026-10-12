@@ -23,7 +23,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'assignments'>('overview');
 
-  // New assignment form state
+  // Form state
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newSubject, setNewSubject] = useState('');
@@ -64,119 +64,209 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
   };
 
   const getGradeColor = (grade: string): string => {
-    if (grade === 'A') return 'bg-green-100 text-green-700';
-    if (grade.startsWith('B')) return 'bg-blue-100 text-blue-700';
-    if (grade.startsWith('C')) return 'bg-yellow-100 text-yellow-700';
-    return 'bg-red-100 text-red-700';
+    if (grade === 'A') return 'bg-green-100 text-green-700 border-green-200';
+    if (grade.startsWith('B')) return 'bg-blue-100 text-blue-700 border-blue-200';
+    if (grade.startsWith('C')) return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    return 'bg-red-100 text-red-700 border-red-200';
   };
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-2xl p-8 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <span className="text-2xl">👨‍🏫</span>
+    <div className="space-y-8 animate-fadeIn">
+      {/* Welcome Hero */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-indigo-900 p-8 md:p-10 text-white animate-fadeInUp">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/3"></div>
+        <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl"></div>
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+            backgroundSize: '30px 30px'
+          }}></div>
+        </div>
+
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20 shadow-xl">
+              <span className="text-3xl">👨‍🏫</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Selamat Datang, {user.name.split(',')[0]}</h1>
-              <p className="text-white/80 text-sm">{user.department} • NIP: {user.nip}</p>
+              <p className="text-white/60 text-sm mb-1">Panel Dosen</p>
+              <h1 className="text-2xl md:text-3xl font-bold">{user.name.split(',')[0]}</h1>
+              <p className="text-white/60 text-sm mt-1">
+                {user.department} • NIP: {user.nip}
+              </p>
             </div>
           </div>
+
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="px-6 py-3 bg-white text-slate-900 rounded-xl font-semibold hover:bg-white/90 transition-all shadow-xl flex items-center gap-2 hover-lift"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Buat Tugas Baru
+          </button>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-              <span className="text-lg">📝</span>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-800">{assignments.length}</div>
-              <div className="text-xs text-gray-500">Tugas Dibuat</div>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <span className="text-lg">👨‍🎓</span>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-800">{studentUsers.length}</div>
-              <div className="text-xs text-gray-500">Mahasiswa Terdaftar</div>
+        {[
+          { label: 'Tugas Dibuat', value: assignments.length, icon: '📝', color: 'from-indigo-500 to-purple-500', bgColor: 'bg-indigo-50' },
+          { label: 'Mahasiswa', value: studentUsers.length, icon: '👨‍🎓', color: 'from-green-500 to-emerald-500', bgColor: 'bg-green-50' },
+          { label: 'Submission', value: totalSubmissions, icon: '📊', color: 'from-orange-500 to-red-500', bgColor: 'bg-orange-50' },
+          { label: 'Rata-rata Nilai', value: avgScore, icon: '⭐', color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-50' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-all hover-lift">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}>
+                <span className="text-xl">{stat.icon}</span>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-gray-800">{stat.value}</div>
+                <div className="text-xs text-gray-500">{stat.label}</div>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <span className="text-lg">📊</span>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-800">{totalSubmissions}</div>
-              <div className="text-xs text-gray-500">Total Submission</div>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <span className="text-lg">⭐</span>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-800">{avgScore}</div>
-              <div className="text-xs text-gray-500">Rata-rata Nilai</div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
+      {/* Create Assignment Modal */}
+      {showCreateForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-scaleIn">
+          <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-800">📝 Buat Tugas Essay Baru</h3>
+              <button
+                onClick={() => setShowCreateForm(false)}
+                className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <form onSubmit={handleCreateAssignment} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Judul Tugas</label>
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="Masukkan judul tugas"
+                  required
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Mata Kuliah</label>
+                <input
+                  type="text"
+                  value={newSubject}
+                  onChange={(e) => setNewSubject(e.target.value)}
+                  placeholder="Contoh: Teknologi Informasi"
+                  required
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi</label>
+                <textarea
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder="Jelaskan instruksi tugas essay..."
+                  required
+                  rows={3}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-sm resize-none"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Nilai Maksimal</label>
+                  <input
+                    type="number"
+                    value={newMaxScore}
+                    onChange={(e) => setNewMaxScore(Number(e.target.value))}
+                    min={1}
+                    max={100}
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Deadline</label>
+                  <input
+                    type="date"
+                    value={newDueDate}
+                    onChange={(e) => setNewDueDate(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-sm"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all text-sm font-semibold shadow-lg shadow-indigo-200/50"
+                >
+                  Buat Tugas
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'overview' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'
-          }`}
-        >
-          📈 Overview
-        </button>
-        <button
-          onClick={() => setActiveTab('students')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'students' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'
-          }`}
-        >
-          👨‍🎓 Mahasiswa
-        </button>
-        <button
-          onClick={() => setActiveTab('assignments')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'assignments' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'
-          }`}
-        >
-          📋 Tugas
-        </button>
+      <div className="bg-white rounded-2xl p-2 border border-gray-100 shadow-sm inline-flex gap-1">
+        {[
+          { id: 'overview', label: 'Overview', icon: '📈' },
+          { id: 'students', label: 'Mahasiswa', icon: '👨‍🎓' },
+          { id: 'assignments', label: 'Tugas', icon: '📋' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+              activeTab === tab.id
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+            }`}
+          >
+            <span>{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Tab Content */}
       {activeTab === 'overview' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fadeIn">
           {/* Recent Submissions */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-800">📥 Submission Terbaru</h3>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-gray-800">📥 Submission Terbaru</h3>
+                <p className="text-sm text-gray-500 mt-0.5">5 submission terakhir</p>
+              </div>
             </div>
             <div className="p-6">
               {results.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
-                  <div className="text-3xl mb-2">📭</div>
-                  <p>Belum ada submission dari mahasiswa</p>
+                <div className="text-center py-12">
+                  <div className="text-5xl mb-3">📭</div>
+                  <p className="text-gray-400 font-medium">Belum ada submission</p>
+                  <p className="text-sm text-gray-300 mt-1">Mahasiswa belum mengumpulkan tugas</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -188,22 +278,29 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
                       <div
                         key={result.submissionId}
                         onClick={() => onViewSubmissionDetail(result)}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 transition-colors cursor-pointer border border-gray-100"
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 transition-all cursor-pointer border border-gray-100 hover:border-indigo-200 group"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm">👨‍🎓</span>
+                        <div className="flex items-center gap-4">
+                          <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
+                            <span className="text-white font-bold text-sm">
+                              {sub.studentName.charAt(0)}
+                            </span>
                           </div>
                           <div>
-                            <p className="font-medium text-gray-800 text-sm">{sub.studentName}</p>
-                            <p className="text-xs text-gray-500">{assign.title.substring(0, 40)}...</p>
+                            <p className="font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">{sub.studentName}</p>
+                            <p className="text-xs text-gray-500">{assign.title.substring(0, 45)}...</p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${getGradeColor(result.grade)}`}>
-                            {result.grade}
+                        <div className="text-right flex items-center gap-3">
+                          <div>
+                            <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-bold border ${getGradeColor(result.grade)}`}>
+                              {result.grade}
+                            </span>
+                            <p className="text-xs text-gray-500 mt-1">{result.totalScore}/{result.maxScore}</p>
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">{result.totalScore}/{result.maxScore}</p>
+                          <svg className="w-5 h-5 text-gray-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
                         </div>
                       </div>
                     );
@@ -214,24 +311,24 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
           </div>
 
           {/* Integrity Overview */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">🛡️ Integritas Akademik</h3>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-5">🛡️ Integritas Akademik</h3>
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
-                <div className="text-2xl font-bold text-green-600">{avgIntegrity}%</div>
-                <div className="text-xs text-green-600 mt-1">Rata-rata Integritas</div>
+              <div className="text-center p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100">
+                <div className="text-3xl font-bold text-green-600">{avgIntegrity}%</div>
+                <div className="text-xs text-green-600 mt-1 font-medium">Rata-rata Integritas</div>
               </div>
-              <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-100">
-                <div className="text-2xl font-bold text-yellow-600">
+              <div className="text-center p-5 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl border border-yellow-100">
+                <div className="text-3xl font-bold text-yellow-600">
                   {results.filter((r) => r.integrityScore < 70).length}
                 </div>
-                <div className="text-xs text-yellow-600 mt-1">Perlu Perhatian</div>
+                <div className="text-xs text-yellow-600 mt-1 font-medium">Perlu Perhatian</div>
               </div>
-              <div className="text-center p-4 bg-red-50 rounded-xl border border-red-100">
-                <div className="text-2xl font-bold text-red-600">
+              <div className="text-center p-5 bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl border border-red-100">
+                <div className="text-3xl font-bold text-red-600">
                   {results.filter((r) => r.integrityScore < 40).length}
                 </div>
-                <div className="text-xs text-red-600 mt-1">Dicurigai</div>
+                <div className="text-xs text-red-600 mt-1 font-medium">Dicurigai</div>
               </div>
             </div>
           </div>
@@ -239,16 +336,16 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
       )}
 
       {activeTab === 'students' && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-fadeIn">
           <div className="p-6 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800">Daftar Mahasiswa</h3>
+            <h3 className="text-lg font-bold text-gray-800">Daftar Mahasiswa</h3>
             <p className="text-sm text-gray-500 mt-1">{studentUsers.length} mahasiswa terdaftar</p>
           </div>
           <div className="p-6">
             {studentUsers.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <div className="text-3xl mb-2">👨‍🎓</div>
-                <p>Belum ada mahasiswa terdaftar</p>
+              <div className="text-center py-12">
+                <div className="text-5xl mb-3">👨‍🎓</div>
+                <p className="text-gray-400 font-medium">Belum ada mahasiswa</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -262,20 +359,20 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
                     : 0;
 
                   return (
-                    <div key={student.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-bold text-indigo-600">
+                    <div key={student.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-indigo-50/50 hover:border-indigo-200 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
+                          <span className="text-white font-bold text-sm">
                             {student.name.charAt(0)}
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-800 text-sm">{student.name}</p>
+                          <p className="font-semibold text-gray-800">{student.name}</p>
                           <p className="text-xs text-gray-500">NIM: {student.nim} • {student.department}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-gray-800">{studentSubmissions.length} submission</p>
+                        <p className="text-sm font-bold text-gray-800">{studentSubmissions.length} submission</p>
                         <p className="text-xs text-gray-500">
                           {studentResults.length > 0 ? `Rata-rata: ${studentAvg}` : 'Belum dinilai'}
                         </p>
@@ -290,124 +387,35 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
       )}
 
       {activeTab === 'assignments' && (
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Buat Tugas Baru
-            </button>
-          </div>
-
-          {/* Create Assignment Form */}
-          {showCreateForm && (
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 animate-fadeIn">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">📝 Buat Tugas Essay Baru</h3>
-              <form onSubmit={handleCreateAssignment} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Judul Tugas</label>
-                    <input
-                      type="text"
-                      value={newTitle}
-                      onChange={(e) => setNewTitle(e.target.value)}
-                      placeholder="Masukkan judul tugas"
-                      required
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mata Kuliah</label>
-                    <input
-                      type="text"
-                      value={newSubject}
-                      onChange={(e) => setNewSubject(e.target.value)}
-                      placeholder="Contoh: Teknologi Informasi"
-                      required
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi Tugas</label>
-                  <textarea
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    placeholder="Jelaskan instruksi tugas essay..."
-                    required
-                    rows={3}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm resize-none"
-                  />
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nilai Maksimal</label>
-                    <input
-                      type="number"
-                      value={newMaxScore}
-                      onChange={(e) => setNewMaxScore(Number(e.target.value))}
-                      min={1}
-                      max={100}
-                      required
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
-                    <input
-                      type="date"
-                      value={newDueDate}
-                      onChange={(e) => setNewDueDate(e.target.value)}
-                      required
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-3 justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateForm(false)}
-                    className="px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-sm"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors text-sm font-medium"
-                  >
-                    Buat Tugas
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {/* Assignment List */}
-          <div className="space-y-3">
+        <div className="space-y-4 animate-fadeIn">
+          <div className="grid gap-4">
             {assignments.map((assignment) => {
               const assignSubmissions = submissions.filter((s) => s.assignmentId === assignment.id);
               return (
-                <div key={assignment.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
+                <div key={assignment.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-indigo-200 transition-all">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
                           {assignment.subject}
                         </span>
-                        <span className="text-xs text-gray-400">
-                          Deadline: {new Date(assignment.dueDate).toLocaleDateString('id-ID')}
+                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {new Date(assignment.dueDate).toLocaleDateString('id-ID')}
                         </span>
                       </div>
-                      <h4 className="font-semibold text-gray-800">{assignment.title}</h4>
+                      <h4 className="font-bold text-gray-800 text-lg">{assignment.title}</h4>
                       <p className="text-sm text-gray-500 mt-1 line-clamp-2">{assignment.description}</p>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-4">
-                      <div className="text-lg font-bold text-indigo-600">{assignSubmissions.length}</div>
-                      <div className="text-xs text-gray-500">submission</div>
+                    <div className="text-center flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200/50">
+                        <div className="text-center">
+                          <div className="text-xl font-bold text-white">{assignSubmissions.length}</div>
+                          <div className="text-xs text-white/70">submit</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

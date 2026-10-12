@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Assignment, Submission, GradingResult, User, AppView } from './types';
 import { assignments as initialAssignments, initialUsers } from './data';
 import { gradeEssay } from './aiGrader';
-import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage';
+import AuthPage from './components/AuthPage';
 import LecturerDashboard from './components/LecturerDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import EssaySubmission from './components/EssaySubmission';
@@ -102,33 +101,28 @@ function App() {
     setAssignments((prev) => [...prev, newAssignment]);
   };
 
-  // Render based on view and role
+  // Render based on view
   const renderView = () => {
-    // Auth views
+    // Auth view
     if (view === 'login') {
       return (
-        <LoginPage
+        <AuthPage
           users={users}
           onLogin={handleLogin}
-          onGoToRegister={() => setView('register')}
-        />
-      );
-    }
-
-    if (view === 'register') {
-      return (
-        <RegisterPage
-          users={users}
           onRegister={handleRegister}
-          onGoToLogin={() => setView('login')}
         />
       );
     }
 
     // Must be logged in for other views
     if (!currentUser) {
-      setView('login');
-      return null;
+      return (
+        <AuthPage
+          users={users}
+          onLogin={handleLogin}
+          onRegister={handleRegister}
+        />
+      );
     }
 
     // Dashboard based on role
@@ -174,7 +168,6 @@ function App() {
 
     // Results list
     if (view === 'results') {
-      // Filter results based on role
       const filteredResults = currentUser.role === 'lecturer'
         ? results
         : results.filter((r) =>
@@ -217,18 +210,18 @@ function App() {
     return null;
   };
 
-  // Show navigation only when logged in and not on auth pages
-  const showNav = currentUser && view !== 'login' && view !== 'register';
+  // Show navigation only when logged in
+  const showNav = currentUser && view !== 'login';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50/30">
       {/* Navigation */}
       {showNav && (
-        <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40">
+        <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-3 cursor-pointer" onClick={handleBack}>
-                <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="flex items-center gap-3 cursor-pointer group" onClick={handleBack}>
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200/50 group-hover:scale-105 transition-transform">
                   <span className="text-white text-lg">🎓</span>
                 </div>
                 <div>
@@ -238,49 +231,52 @@ function App() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={handleBack}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    view === 'dashboard' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    view === 'dashboard' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  🏠 Dashboard
+                  <span className="hidden sm:inline">🏠 </span>Dashboard
                 </button>
                 <button
                   onClick={handleViewResults}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                     view === 'results' || view === 'detail'
-                      ? 'bg-indigo-100 text-indigo-700'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  📊 {currentUser.role === 'lecturer' ? 'Semua Nilai' : 'Nilai Saya'}
+                  <span className="hidden sm:inline">📊 </span>
+                  {currentUser.role === 'lecturer' ? 'Semua Nilai' : 'Nilai Saya'}
                 </button>
-                <div className="hidden sm:flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-700 font-medium">AI Online</span>
-                </div>
-                {/* User Profile & Logout */}
-                <div className="flex items-center gap-2 ml-2 pl-3 border-l border-gray-200">
-                  <div className="hidden md:flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      currentUser.role === 'lecturer' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700'
+                
+                {/* Divider */}
+                <div className="w-px h-8 bg-gray-200 mx-2 hidden sm:block"></div>
+
+                {/* User Profile */}
+                <div className="flex items-center gap-3">
+                  <div className="hidden md:flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${
+                      currentUser.role === 'lecturer' 
+                        ? 'bg-gradient-to-br from-slate-700 to-slate-900 text-white' 
+                        : 'bg-gradient-to-br from-indigo-500 to-purple-500 text-white'
                     }`}>
                       {currentUser.name.charAt(0)}
                     </div>
                     <div className="text-right">
-                      <p className="text-xs font-medium text-gray-700 leading-tight max-w-[120px] truncate">
+                      <p className="text-xs font-semibold text-gray-700 leading-tight max-w-[120px] truncate">
                         {currentUser.name.split(',')[0]}
                       </p>
                       <p className="text-xs text-gray-400 leading-tight">
-                        {currentUser.role === 'lecturer' ? 'Dosen' : 'Mahasiswa'}
+                        {currentUser.role === 'lecturer' ? '👨‍🏫 Dosen' : '👨‍🎓 Mahasiswa'}
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                     title="Keluar"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,18 +297,23 @@ function App() {
 
       {/* Footer */}
       {showNav && (
-        <footer className="border-t border-gray-200 bg-white/50 mt-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <footer className="border-t border-gray-100 bg-white/50 mt-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-gray-500">
-                © 2026 AI Essay Grader — Sistem Penilaian Tugas Mahasiswa Berbasis AI
-              </p>
-              <div className="flex items-center gap-4 text-sm text-gray-400">
-                <span>🔒 Anti Copy-Paste</span>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm">🎓</span>
+                </div>
+                <p className="text-sm text-gray-500">
+                  © 2026 AI Essay Grader — Sistem Penilaian Tugas Berbasis AI
+                </p>
+              </div>
+              <div className="flex items-center gap-4 text-xs text-gray-400">
+                <span className="flex items-center gap-1">🔒 Anti Copy-Paste</span>
                 <span>•</span>
-                <span>🤖 AI-Powered Grading</span>
+                <span className="flex items-center gap-1">🤖 AI-Powered</span>
                 <span>•</span>
-                <span>📊 Real-time Analysis</span>
+                <span className="flex items-center gap-1">📊 Real-time</span>
               </div>
             </div>
           </div>
