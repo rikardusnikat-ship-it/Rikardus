@@ -14,7 +14,7 @@ Buat repository baru di GitHub dengan nama yang Anda inginkan (contoh: `ai-essay
 
 ```javascript
 export default defineConfig({
-  base: '/nama-repository-anda/', // ← GANTI INI
+  base: '/Rikardus/', // 
   plugins: [react(), tailwindcss()],
   server: {
     host: "0.0.0.0",
